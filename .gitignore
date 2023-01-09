@@ -1,0 +1,6 @@
+cmd/animali/*
+cmd/testmid
+!cmd/animali/main.go
+internal/animali/assets.go
+materials/*
+.history/
