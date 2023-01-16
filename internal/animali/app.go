@@ -30,25 +30,23 @@ type Screen struct {
 
 func InitApp() *App {
 	a := App{}
-	a.MusicScreenResources = []fyne.Resource{resourceMusic1Png, resourceMusic2Png, resourceMusic3Png, resourceMusic4Png, resourceMusic5Png, resourceMusic6Png, resourceMusic7Png, resourceMusic8Png, resourceMusic9Png}
 	a.Player = InitPayer()
-	a.Player.AddToPlaylist(resourceSongMp3, resourceSongMp3.StaticName)
-	a.Player.AddToPlaylist(resourceShortMp3, resourceShortMp3.StaticName)
 	a.SetContentWorker()
 	return &a
 }
 
 func (a *App) Run() {
 	a.FyneApp = app.New()
-	a.FyneApp.Preferences()
 	a.FyneApp.Settings().SetTheme(&myTheme{})
-	mv := BuildMainView()
+	mav := BuildMainView()
 	a.Screen = make(map[string]Screen)
-	MainScr := Screen{title: "Main", Conteiner: mv.container}
+	MainScr := Screen{title: "Main", Conteiner: mav.container}
 	a.Screen["Main"] = MainScr
-	Mv := Build(a.Player)
-	Music := Screen{title: "Music", Conteiner: Mv.Container()}
+	muv := BuildMusicView(a.Player)
+	Music := Screen{title: "Music", Conteiner: muv.Container()}
 	a.Screen["Music"] = Music
+	a.FyneApp.Lifecycle().SetOnEnteredForeground(a.Player.Stop)
+	a.FyneApp.Lifecycle().SetOnExitedForeground(a.Player.Stop)
 	a.main = a.FyneApp.NewWindow("Main - Animali")
 	ContentChannal <- "Main"
 	a.Main().ShowAndRun()
@@ -63,7 +61,6 @@ func (a *App) SetContentWorker() {
 		for val := range ContentChannal {
 			fmt.Println(val)
 			if screen, ok := a.Screen[val]; ok {
-				fmt.Println("Set")
 				a.main.SetContent(screen.Conteiner)
 			}
 		}

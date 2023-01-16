@@ -36,7 +36,9 @@ func (p *Player) AddToPlaylist(fr fyne.Resource, name string) {
 	}
 }
 func (p *Player) Stop() {
-	p.stop <- struct{}{}
+	if p.playing {
+		p.stop <- struct{}{}
+	}
 	p.playing = false
 }
 func (p *Player) SetSong(name string) error {

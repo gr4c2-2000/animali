@@ -11,30 +11,31 @@ There a four main goals for this project :
 
 
 ## Build 
+Builds desktop app preview
 ```
 make 
 ```
-Builds desktop app preview
 
+Runs go build whitout building assets 
 ```
 make build-go
 ```
-Runs go build whitout building assets 
 
+Builds Android APK
 ```
 make build-android
 ```
-Builds Android APK
 
+Generate's assets from ./assets dir to internal/animali/assets.go
 ```
 make build-assets
 ```
-Generate's assets from ./assets dir to internal/animali/assets.go
 
+Builds only APK whitout regenerating assets
 ```
 make build-apk
 ```
-Builds only APK whitout regenerating assets
+
 
 ## TO DO : 
  - add grid with animals sounds
@@ -42,7 +43,19 @@ Builds only APK whitout regenerating assets
  - refactor
  - test
  - add language support
+ - about
 
 ## Nice To Have :
  - Add badtime story's
  - Add white noises
+
+
+## Credits 
+### Sound Effect 
+Universfield, Pixabay
+
+
+### MIDI 
+https://www.romwell.com/kids/nursery_rhymes/kids_midi.shtml
+
+### Images 

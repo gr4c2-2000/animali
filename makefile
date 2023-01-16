@@ -7,4 +7,4 @@ build-assets:
 	fyne bundle --pkg animali ./assets/ >> ./internal/animali/assets.go
 build-apk: 
 	cd cmd/animali && fyne package -os android -appID com.animali.test -icon ../../assets/icon.png
-	cd cmd/animali && my -f ../../apk/animali.apk
+	cd cmd/animali && mv -f ../../apk/animali.apk

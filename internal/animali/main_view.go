@@ -21,11 +21,8 @@ func BuildMainView() *MainView {
 
 	image := canvas.NewImageFromResource(resourceAnimaliPng)
 	image.FillMode = canvas.ImageFillContain
-	footerBG := canvas.NewImageFromResource(resourceOrgradPng)
-	footerBG.FillMode = canvas.ImageFillStretch
-	but := appwiget.NewButtonWithData(fynelanguage.LanguageStorage.Get("Music"), "Miusic", func() {
+	but := appwiget.NewButtonWithData(fynelanguage.LanguageStorage.Get("Music"), "Music", func() {
 		ContentChannal <- "Music"
-		fmt.Println("sxxxx")
 	})
 	but2 := appwiget.NewButtonWithData(fynelanguage.LanguageStorage.Get("Animals"), "Animals", func() { fmt.Println("sxxxx") })
 	menu := container.New(layout.NewVBoxLayout(), but, but2)
