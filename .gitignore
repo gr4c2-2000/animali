@@ -4,3 +4,4 @@ cmd/testmid
 internal/animali/assets.go
 materials/*
 .history/
+pkg/fyneandroid

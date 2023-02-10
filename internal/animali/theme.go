@@ -7,11 +7,11 @@ import (
 	"fyne.io/fyne/v2/theme"
 )
 
-type myTheme struct{}
+type yellowTheme struct{}
 
-var _ fyne.Theme = (*myTheme)(nil)
+var _ fyne.Theme = (*yellowTheme)(nil)
 
-func (m myTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant) color.Color {
+func (m yellowTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant) color.Color {
 	if name == theme.ColorNameButton || name == theme.ColorNameHover {
 		return color.RGBA{244, 194, 0, 255} //https://icolorpalette.com/color/2a5278
 	}
@@ -22,14 +22,14 @@ func (m myTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant) colo
 	return theme.DefaultTheme().Color(name, variant)
 }
 
-func (m myTheme) Icon(name fyne.ThemeIconName) fyne.Resource {
+func (m yellowTheme) Icon(name fyne.ThemeIconName) fyne.Resource {
 	return theme.DefaultTheme().Icon(name)
 }
 
-func (m myTheme) Font(style fyne.TextStyle) fyne.Resource {
+func (m yellowTheme) Font(style fyne.TextStyle) fyne.Resource {
 	return theme.DefaultTheme().Font(style)
 }
 
-func (m myTheme) Size(name fyne.ThemeSizeName) float32 {
+func (m yellowTheme) Size(name fyne.ThemeSizeName) float32 {
 	return theme.DefaultTheme().Size(name)
 }

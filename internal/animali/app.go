@@ -1,11 +1,17 @@
 package animali
 
 import (
+	fyneappsettings "Animali/pkg/fyne-app-settings"
+	fynelanguage "Animali/pkg/fyne-language"
+	"context"
+	"time"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 )
 
 var ContentChannal = make(chan string)
+var LanguagePack fynelanguage.LanguagePack
 
 type State struct {
 	CurrentConteiner *fyne.Container
@@ -15,10 +21,15 @@ type App struct {
 	State                State
 	Player               *Player
 	MusicScreenResources []fyne.Resource
-	Theme                myTheme
+	Theme                yellowTheme
 	FyneApp              fyne.App
 	Screen               map[string]Screen
 	main                 fyne.Window
+	Settings             Settings
+}
+type Settings struct {
+	Language string
+	ThemeID  int
 }
 
 type Screen struct {
@@ -30,12 +41,16 @@ func InitApp() *App {
 	a := App{}
 	a.Player = InitPayer()
 	a.SetContentWorker()
+
+	LanguagePack = *fynelanguage.InitLanguagePack()
 	return &a
 }
 
 func (a *App) Run() {
-	a.FyneApp = app.New()
-	a.FyneApp.Settings().SetTheme(&myTheme{})
+	a.FyneApp = app.NewWithID("test.example.com")
+	fyneappsettings.InitFyneAppSettings(&a.Settings, a.FyneApp).Listiner(context.TODO(), 1*time.Second)
+
+	a.FyneApp.Settings().SetTheme(&yellowTheme{})
 	mav := BuildMainView()
 	a.Screen = make(map[string]Screen)
 	MainScr := Screen{title: MAIN, Conteiner: mav.container}

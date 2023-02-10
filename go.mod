@@ -1,15 +1,11 @@
 module Animali
 
-go 1.17
+go 1.18
 
 require (
 	fyne.io/fyne/v2 v2.3.0
-	github.com/gen2brain/malgo v0.11.10
 	github.com/hajimehoshi/go-mp3 v0.3.4
-	github.com/youpy/go-wav v0.3.2
 )
-
-require golang.org/x/exp v0.0.0-20200224162631-6cc2880d07d6 // indirect
 
 require (
 	fyne.io/systray v1.10.1-0.20221115204952-d16a6177e6f1 // indirect
@@ -26,17 +22,14 @@ require (
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/goki/freetype v0.0.0-20220119013949-7a161fd3728c // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
-	github.com/hajimehoshi/oto v1.0.1
-	github.com/hajimehoshi/oto/v2 v2.3.1 // indirect
+	github.com/hajimehoshi/oto/v2 v2.3.1
 	github.com/jsummers/gobmp v0.0.0-20151104160322-e2ba15ffa76e // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/srwiley/oksvg v0.0.0-20221011165216-be6e8873101c // indirect
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef // indirect
 	github.com/stretchr/testify v1.8.1 // indirect
 	github.com/tevino/abool v1.2.0 // indirect
-	github.com/youpy/go-riff v0.1.0 // indirect
 	github.com/yuin/goldmark v1.5.3 // indirect
-	github.com/zaf/g711 v0.0.0-20220109202201-cf0017bf0359 // indirect
 	golang.org/x/image v0.3.0 // indirect
 	golang.org/x/mobile v0.0.0-20221110043201-43a038452099 // indirect
 	golang.org/x/net v0.5.0 // indirect
