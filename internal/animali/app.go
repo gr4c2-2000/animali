@@ -1,6 +1,7 @@
 package animali
 
 import (
+	eventworker "Animali/pkg/event-worker"
 	fyneappsettings "Animali/pkg/fyne-app-settings"
 	fynelanguage "Animali/pkg/fyne-language"
 	"context"
@@ -11,13 +12,9 @@ import (
 	"fyne.io/fyne/v2/app"
 )
 
-var ExecCommand = make(chan Command)
+var Queue = make(chan eventworker.Event)
 var LanguagePack fynelanguage.LanguagePack
 
-type Command struct {
-	Type  string
-	Value string
-}
 type State struct {
 	CurrentConteiner *fyne.Container
 }
@@ -31,6 +28,7 @@ type App struct {
 	Screen               map[string]Screen
 	main                 fyne.Window
 	Settings             Settings
+	EventWoker           *eventworker.EventWorder
 }
 type Settings struct {
 	Language  string
@@ -45,7 +43,10 @@ type Screen struct {
 func InitApp() *App {
 	a := App{}
 	a.Player = InitPayer()
-	a.CommandWorker()
+	a.EventWoker = &eventworker.EventWorder{Queue: Queue}
+	a.EventWoker.AddListiner(a.ThemeListiner)
+	a.EventWoker.AddListiner(a.ViewListiner)
+	a.EventWoker.CommandWorker()
 	a.Themes = InitFyneTheme()
 	LanguagePack = *fynelanguage.InitLanguagePack()
 	return &a
@@ -54,7 +55,7 @@ func InitApp() *App {
 func (a *App) Run() {
 	a.FyneApp = app.NewWithID("test.example.com")
 	fyneappsettings.InitFyneAppSettings(&a.Settings, a.FyneApp).Listiner(context.TODO(), 1*time.Second)
-	ExecCommand <- Command{THEME, a.Settings.ThemeName}
+	Queue <- eventworker.Event{THEME, a.Settings.ThemeName}
 	mav := BuildMainView()
 	a.Screen = make(map[string]Screen)
 	MainScr := Screen{title: MAIN, Conteiner: mav.container}
@@ -65,7 +66,7 @@ func (a *App) Run() {
 	a.FyneApp.Lifecycle().SetOnEnteredForeground(a.Player.Stop)
 	a.FyneApp.Lifecycle().SetOnExitedForeground(a.Player.Stop)
 	a.main = a.FyneApp.NewWindow(TITLE)
-	ExecCommand <- Command{VIEW, MAIN}
+	Queue <- eventworker.Event{VIEW, MAIN}
 	a.Main().ShowAndRun()
 }
 
@@ -73,7 +74,23 @@ func (a *App) Main() fyne.Window {
 	return a.main
 }
 
-func (a *App) CommandWorker() {
+func (a *App) ViewListiner(typ string, value string) {
+	if typ == VIEW {
+		if screen, ok := a.Screen[value]; ok {
+			a.main.SetContent(screen.Conteiner)
+		} else {
+			fyne.LogError("", errors.New("incorect ScreenName"))
+		}
+	}
+}
+
+func (a *App) ThemeListiner(typ string, value string) {
+	if typ == THEME {
+		a.FyneApp.Settings().SetTheme(a.Themes.ThemeByName(value))
+	}
+}
+
+/* func (a *App) CommandWorker() {
 
 	go func() {
 		for Command := range ExecCommand {
@@ -92,3 +109,4 @@ func (a *App) CommandWorker() {
 		}
 	}()
 }
+*/
