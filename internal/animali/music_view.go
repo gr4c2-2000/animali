@@ -51,7 +51,7 @@ func BuildMusicView(Player *Player) *SoundGridView {
 }
 
 func BuildAnimalView(Player *Player) *SoundGridView {
-	// add create resources
+	// TODO: add create resources, need to found sounds and images
 	mvi := make([]MusicViewItem, 0)
 
 	return BuildSoundGridView(Player, mvi)
