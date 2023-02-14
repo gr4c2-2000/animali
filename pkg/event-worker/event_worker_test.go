@@ -37,8 +37,8 @@ func TestEventWoker_CommandWorker(t *testing.T) {
 		result string
 		event  Event
 	}{
-		{"Event procesing", fields{[]Listiner{testFuncType}, make(chan Event)}, "type", Event{"type", "value"}},
-		{"Event procesing", fields{[]Listiner{testFuncValue}, make(chan Event)}, "value", Event{"type", "value"}},
+		{"Event procesing, type verification", fields{[]Listiner{func(a string, b string) { TestResultQueue <- a }}, make(chan Event)}, "type", Event{"type", "value"}},
+		{"Event procesing, value verification", fields{[]Listiner{func(a string, b string) { TestResultQueue <- b }}, make(chan Event)}, "value", Event{"type", "value"}},
 	}
 
 	for _, tt := range TestResult {
@@ -65,11 +65,4 @@ func TestEventWoker_CommandWorker(t *testing.T) {
 		})
 	}
 
-}
-
-func testFuncType(a string, b string) {
-	TestResultQueue <- a
-}
-func testFuncValue(a string, b string) {
-	TestResultQueue <- b
 }
