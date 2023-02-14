@@ -1,5 +1,7 @@
 package eventworker
 
+import "errors"
+
 type Listiner func(typ string, value string)
 
 type Event struct {
@@ -7,22 +9,32 @@ type Event struct {
 	Value string
 }
 
-type EventWorder struct {
+type EventWoker struct {
 	Listiner []Listiner
 	Queue    chan Event
 }
 
-func (cw *EventWorder) AddListiner(ce Listiner) {
-	cw.Listiner = append(cw.Listiner, ce)
+func (cw *EventWoker) AddListiner(ce ...Listiner) {
+	for _, function := range ce {
+		cw.Listiner = append(cw.Listiner, function)
+	}
 }
 
-func (cw *EventWorder) CommandWorker() {
+func NewEvent(typ string, value string) Event {
+	return Event{typ, value}
+}
 
+func (cw *EventWoker) CommandWorker() error {
+	if cw.Queue == nil {
+		return errors.New("NO_QUEUE")
+	}
 	go func() {
-		for Event := range cw.Queue {
-			for _, revicer := range cw.Listiner {
-				revicer(Event.Type, Event.Value)
+		for event := range cw.Queue {
+			for _, reciver := range cw.Listiner {
+				reciver(event.Type, event.Value)
 			}
 		}
 	}()
+
+	return nil
 }

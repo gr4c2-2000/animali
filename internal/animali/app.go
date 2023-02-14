@@ -28,7 +28,7 @@ type App struct {
 	Screen               map[string]Screen
 	main                 fyne.Window
 	Settings             Settings
-	EventWoker           *eventworker.EventWorder
+	EventWoker           *eventworker.EventWoker
 }
 type Settings struct {
 	Language  string
@@ -43,9 +43,8 @@ type Screen struct {
 func InitApp() *App {
 	a := App{}
 	a.Player = InitPayer()
-	a.EventWoker = &eventworker.EventWorder{Queue: Queue}
-	a.EventWoker.AddListiner(a.ThemeListiner)
-	a.EventWoker.AddListiner(a.ViewListiner)
+	a.EventWoker = &eventworker.EventWoker{Queue: Queue}
+	a.EventWoker.AddListiner(a.ThemeListiner, a.ViewListiner)
 	a.EventWoker.CommandWorker()
 	a.Themes = InitFyneTheme()
 	LanguagePack = *fynelanguage.InitLanguagePack()
@@ -54,8 +53,8 @@ func InitApp() *App {
 
 func (a *App) Run() {
 	a.FyneApp = app.NewWithID("test.example.com")
-	fyneappsettings.InitFyneAppSettings(&a.Settings, a.FyneApp).Listiner(context.TODO(), 1*time.Second)
-	Queue <- eventworker.Event{THEME, a.Settings.ThemeName}
+	fyneappsettings.InitFyneAppSettings(&a.Settings, a.FyneApp).Watch(context.TODO(), 1*time.Second)
+	Queue <- eventworker.NewEvent(THEME, a.Settings.ThemeName)
 	mav := BuildMainView()
 	a.Screen = make(map[string]Screen)
 	MainScr := Screen{title: MAIN, Conteiner: mav.container}
@@ -66,7 +65,7 @@ func (a *App) Run() {
 	a.FyneApp.Lifecycle().SetOnEnteredForeground(a.Player.Stop)
 	a.FyneApp.Lifecycle().SetOnExitedForeground(a.Player.Stop)
 	a.main = a.FyneApp.NewWindow(TITLE)
-	Queue <- eventworker.Event{VIEW, MAIN}
+	Queue <- eventworker.NewEvent(VIEW, MAIN)
 	a.Main().ShowAndRun()
 }
 
@@ -89,24 +88,3 @@ func (a *App) ThemeListiner(typ string, value string) {
 		a.FyneApp.Settings().SetTheme(a.Themes.ThemeByName(value))
 	}
 }
-
-/* func (a *App) CommandWorker() {
-
-	go func() {
-		for Command := range ExecCommand {
-			switch Command.Type {
-			case VIEW:
-				if screen, ok := a.Screen[Command.Value]; ok {
-					a.main.SetContent(screen.Conteiner)
-				} else {
-					fyne.LogError("", errors.New("incorect ScreenName"))
-				}
-			case THEME:
-				a.FyneApp.Settings().SetTheme(a.Themes.ThemeByName(Command.Value))
-			default:
-				fyne.LogError("", errors.New("Incorect Command"))
-			}
-		}
-	}()
-}
-*/
