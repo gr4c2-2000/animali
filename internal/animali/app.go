@@ -45,7 +45,11 @@ func InitApp() *App {
 	a.Player = InitPayer()
 	a.EventWoker = &eventworker.EventWoker{Queue: Queue}
 	a.EventWoker.AddListiner(a.ThemeListiner, a.ViewListiner)
-	a.EventWoker.CommandWorker()
+	err := a.EventWoker.Worker()
+	if err != nil {
+		fyne.LogError("", err)
+		panic(err)
+	}
 	a.Themes = InitFyneTheme()
 	LanguagePack = *fynelanguage.InitLanguagePack()
 	return &a
@@ -53,7 +57,7 @@ func InitApp() *App {
 
 func (a *App) Run() {
 	a.FyneApp = app.NewWithID("test.example.com")
-	fyneappsettings.InitFyneAppSettings(&a.Settings, a.FyneApp).Watch(context.TODO(), 1*time.Second)
+	fyneappsettings.InitBridge(&a.Settings, a.FyneApp.Preferences()).Watch(context.TODO(), 1*time.Second)
 	Queue <- eventworker.NewEvent(THEME, a.Settings.ThemeName)
 	mav := BuildMainView()
 	a.Screen = make(map[string]Screen)

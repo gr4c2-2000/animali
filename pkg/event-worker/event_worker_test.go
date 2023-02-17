@@ -17,7 +17,7 @@ func TestEventWoker_CommandWorker(t *testing.T) {
 		name   string
 		fields fields
 	}{
-		{"nil queue", fields{[]Listiner{}, nil}},
+		{"nil queue", fields{Listiner: []Listiner{}}},
 	}
 	for _, tt := range TestQueue {
 		t.Run(tt.name, func(t *testing.T) {
@@ -25,7 +25,7 @@ func TestEventWoker_CommandWorker(t *testing.T) {
 				Listiner: tt.fields.Listiner,
 				Queue:    tt.fields.Queue,
 			}
-			err := cw.CommandWorker()
+			err := cw.Worker()
 			if err == nil {
 				t.Errorf("CommandWorker() nil Queue not detected")
 			}
@@ -47,7 +47,7 @@ func TestEventWoker_CommandWorker(t *testing.T) {
 				Listiner: tt.fields.Listiner,
 				Queue:    tt.fields.Queue,
 			}
-			err := cw.CommandWorker()
+			err := cw.Worker()
 			if err != nil {
 				t.Errorf("CommandWorker() Error : %v", err)
 			}

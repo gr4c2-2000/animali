@@ -9,6 +9,7 @@ type Event struct {
 	Value string
 }
 
+// TODO : Work with typos
 type EventWoker struct {
 	Listiner []Listiner
 	Queue    chan Event
@@ -24,7 +25,7 @@ func NewEvent(typ string, value string) Event {
 	return Event{typ, value}
 }
 
-func (cw *EventWoker) CommandWorker() error {
+func (cw *EventWoker) Worker() error {
 	if cw.Queue == nil {
 		return errors.New("NO_QUEUE")
 	}

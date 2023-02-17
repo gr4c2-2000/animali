@@ -46,6 +46,11 @@ func InitFyneTheme() FyneSimpleThemes {
 		ButtonColor: color.RGBA{244, 194, 0, 255},
 		BcColor:     color.RGBA{51, 255, 51, 1.00}})
 
+	fst.Themes[RED] = fyneapptheme.New(fyneapptheme.FyneFastTheme{
+		ColorHover:  color.RGBA{244, 194, 0, 255},
+		ButtonColor: color.RGBA{244, 194, 0, 255},
+		BcColor:     color.RGBA{51, 255, 51, 1.00}})
+
 	return fst
 
 }

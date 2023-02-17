@@ -11,20 +11,23 @@ import (
 	"fyne.io/fyne/v2"
 )
 
-type FyneAppSettings[T comparable] struct {
-	FyneApp     fyne.App
-	AppSettings *T
-	CheckSum    string
+type Settings interface {
+}
+type Bridge[T Settings] struct {
+	FynePreferences fyne.Preferences
+	AppSettings     *T
+	CheckSum        string
 }
 
-func InitFyneAppSettings[T comparable](as *T, fa fyne.App) *FyneAppSettings[T] {
-	fas := FyneAppSettings[T]{AppSettings: as, FyneApp: fa}
+func InitBridge[T Settings](as *T, fa fyne.Preferences) *Bridge[T] {
+
+	fas := Bridge[T]{AppSettings: as, FynePreferences: fa}
 	fas.Read()
 	fmt.Println(fas.AppSettings)
 	fas.CheckSum = common.AsSha256(as)
 	return &fas
 }
-func (f *FyneAppSettings[T]) Watch(ctx context.Context, tick time.Duration) {
+func (f *Bridge[T]) Watch(ctx context.Context, tick time.Duration) {
 	ticker := time.NewTicker(tick)
 	go func() {
 		for {
@@ -38,7 +41,7 @@ func (f *FyneAppSettings[T]) Watch(ctx context.Context, tick time.Duration) {
 	}()
 }
 
-func (f *FyneAppSettings[T]) Persist() {
+func (f *Bridge[T]) Persist() {
 	if f.verify() {
 		return
 	}
@@ -46,7 +49,7 @@ func (f *FyneAppSettings[T]) Persist() {
 
 }
 
-func (f *FyneAppSettings[T]) actionByReflect(Action func(t string, key string, reflectField reflect.Value)) {
+func (f *Bridge[T]) actionByReflect(Action func(t string, key string, reflectField reflect.Value)) {
 	val := reflect.ValueOf(f.AppSettings).Elem()
 	for i := 0; i < val.NumField(); i++ {
 		if val.Field(i).CanInterface() {
@@ -55,41 +58,41 @@ func (f *FyneAppSettings[T]) actionByReflect(Action func(t string, key string, r
 	}
 }
 
-func (f *FyneAppSettings[T]) Read() {
+func (f *Bridge[T]) Read() {
 	f.actionByReflect(f.readPreference)
 }
 
-func (f *FyneAppSettings[T]) persistPreference(t string, key string, reflectField reflect.Value) {
+func (f *Bridge[T]) persistPreference(t string, key string, reflectField reflect.Value) {
 	switch t {
 	case "string":
-		f.FyneApp.Preferences().SetString(key, reflectField.String())
+		f.FynePreferences.SetString(key, reflectField.String())
 	case "int":
-		f.FyneApp.Preferences().SetInt(key, int(reflectField.Int()))
+		f.FynePreferences.SetInt(key, int(reflectField.Int()))
 	case "bool":
-		f.FyneApp.Preferences().SetBool(key, reflectField.Bool())
+		f.FynePreferences.SetBool(key, reflectField.Bool())
 	case "float":
-		f.FyneApp.Preferences().SetFloat(key, reflectField.Float())
+		f.FynePreferences.SetFloat(key, reflectField.Float())
 	default:
 		fyne.LogError("Not suported config data type", errors.New("NOT SUPORTED DATA TYPE"))
 	}
 }
 
-func (f *FyneAppSettings[T]) readPreference(t string, key string, reflectField reflect.Value) {
+func (f *Bridge[T]) readPreference(t string, key string, reflectField reflect.Value) {
 	switch t {
 	case "string":
-		reflectField.SetString(f.FyneApp.Preferences().String(key))
+		reflectField.SetString(f.FynePreferences.String(key))
 	case "int":
-		reflectField.SetInt(int64(f.FyneApp.Preferences().Int(key)))
+		reflectField.SetInt(int64(f.FynePreferences.Int(key)))
 	case "bool":
-		reflectField.SetBool(f.FyneApp.Preferences().Bool(key))
+		reflectField.SetBool(f.FynePreferences.Bool(key))
 	case "float":
-		reflectField.SetFloat(f.FyneApp.Preferences().Float(key))
+		reflectField.SetFloat(f.FynePreferences.Float(key))
 	default:
 		fyne.LogError("Not suported config data type", errors.New("NOT SUPORTED DATA TYPE"))
 	}
 }
 
-func (f *FyneAppSettings[T]) verify() bool {
+func (f *Bridge[T]) verify() bool {
 	newSum := common.AsSha256(f.AppSettings)
 	if newSum == f.CheckSum {
 		return true

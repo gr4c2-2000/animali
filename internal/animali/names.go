@@ -13,4 +13,5 @@ const (
 	PURPLE  = "Purple"
 	PINK    = "Pink"
 	GREEN   = "Green"
+	RED     = "Red"
 )
