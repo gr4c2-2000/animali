@@ -4,12 +4,16 @@ import (
 	"Animali/pkg/common"
 	"context"
 	"errors"
-	"fmt"
 	"reflect"
 	"time"
 
 	"fyne.io/fyne/v2"
 )
+
+const STRING = "string"
+const INT = "int"
+const BOOL = "bool"
+const FLOAT = "float"
 
 type Settings interface {
 }
@@ -23,7 +27,6 @@ func InitBridge[T Settings](as *T, fa fyne.Preferences) *Bridge[T] {
 
 	fas := Bridge[T]{AppSettings: as, FynePreferences: fa}
 	fas.Read()
-	fmt.Println(fas.AppSettings)
 	fas.CheckSum = common.AsSha256(as)
 	return &fas
 }
@@ -64,13 +67,13 @@ func (f *Bridge[T]) Read() {
 
 func (f *Bridge[T]) persistPreference(t string, key string, reflectField reflect.Value) {
 	switch t {
-	case "string":
+	case STRING:
 		f.FynePreferences.SetString(key, reflectField.String())
-	case "int":
+	case INT:
 		f.FynePreferences.SetInt(key, int(reflectField.Int()))
-	case "bool":
+	case BOOL:
 		f.FynePreferences.SetBool(key, reflectField.Bool())
-	case "float":
+	case FLOAT:
 		f.FynePreferences.SetFloat(key, reflectField.Float())
 	default:
 		fyne.LogError("Not suported config data type", errors.New("NOT SUPORTED DATA TYPE"))
@@ -79,13 +82,13 @@ func (f *Bridge[T]) persistPreference(t string, key string, reflectField reflect
 
 func (f *Bridge[T]) readPreference(t string, key string, reflectField reflect.Value) {
 	switch t {
-	case "string":
+	case STRING:
 		reflectField.SetString(f.FynePreferences.String(key))
-	case "int":
+	case INT:
 		reflectField.SetInt(int64(f.FynePreferences.Int(key)))
-	case "bool":
+	case BOOL:
 		reflectField.SetBool(f.FynePreferences.Bool(key))
-	case "float":
+	case FLOAT:
 		reflectField.SetFloat(f.FynePreferences.Float(key))
 	default:
 		fyne.LogError("Not suported config data type", errors.New("NOT SUPORTED DATA TYPE"))

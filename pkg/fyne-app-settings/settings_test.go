@@ -31,8 +31,8 @@ func TestFyneAppSettings_Bridge(t *testing.T) {
 	for _, test := range Test {
 		fa := MockPreferences{mockMap: test.Start}
 		new := TestSettings{}
-		testWachSettings := InitBridge(&new, fa)
-		testWachSettings.Read()
+		testBridge := InitBridge(&new, fa)
+		testBridge.Read()
 
 		if new.Field1 != test.Start["Field1"].(string) {
 			t.Errorf("inccorect field Field1 value")
@@ -45,7 +45,7 @@ func TestFyneAppSettings_Bridge(t *testing.T) {
 			t.Errorf("inccorect field Field3 value")
 
 		}
-		testWachSettings.Watch(context.TODO(), 1000*time.Microsecond)
+		testBridge.Watch(context.TODO(), 1000*time.Microsecond)
 		new.Field1 = test.result.Field1
 		new.Field2 = test.result.Field2
 		new.Field3 = test.result.Field3
