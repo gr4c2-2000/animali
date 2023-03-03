@@ -13,6 +13,8 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
 )
 
 var Queue = make(chan eventworker.Event)
@@ -55,23 +57,35 @@ func InitApp() *App {
 	}
 	a.Themes = InitFyneTheme()
 	LanguagePack = *fynelanguage.InitLanguagePack()
+	a.FyneApp = app.NewWithID("test.example.com")
+
+	a.Screen = make(map[string]Screen)
+	fyneappsettings.InitBridge(&a.Settings, a.FyneApp.Preferences()).Watch(context.TODO(), 1*time.Second)
+	Queue <- eventworker.NewEvent(THEME, a.Settings.ThemeName)
+	mav := BuildMainView()
+	muv := BuildMusicView(a.Player)
+	tv := BuildThemeView(a.Themes)
+	MainScr := Screen{title: MAIN, Conteiner: mav.container}
+	function := func() {
+		Queue <- eventworker.NewEvent(VIEW, MAIN)
+	}
+	backbt := widget.NewButton("BACK", function)
+	Music2 := container.NewBorder(backbt, nil, nil, nil, muv.Container())
+	Music := Screen{title: MUSIC, Conteiner: Music2}
+
+	Theme := Screen{title: THEME, Conteiner: container.NewBorder(backbt, nil, nil, nil, tv.Container())}
+	a.Screen[MAIN] = MainScr
+	a.Screen[MUSIC] = Music
+	a.Screen[THEME] = Theme
+	a.FyneApp.Lifecycle().SetOnEnteredForeground(a.Player.Stop)
+	a.FyneApp.Lifecycle().SetOnExitedForeground(a.Player.Stop)
+	a.main = a.FyneApp.NewWindow(TITLE)
+
 	return &a
 }
 
 func (a *App) Run() {
-	a.FyneApp = app.NewWithID("test.example.com")
-	fyneappsettings.InitBridge(&a.Settings, a.FyneApp.Preferences()).Watch(context.TODO(), 1*time.Second)
-	Queue <- eventworker.NewEvent(THEME, a.Settings.ThemeName)
-	mav := BuildMainView()
-	a.Screen = make(map[string]Screen)
-	MainScr := Screen{title: MAIN, Conteiner: mav.container}
-	a.Screen[MAIN] = MainScr
-	muv := BuildMusicView(a.Player)
-	Music := Screen{title: MUSIC, Conteiner: muv.Container()}
-	a.Screen[MUSIC] = Music
-	a.FyneApp.Lifecycle().SetOnEnteredForeground(a.Player.Stop)
-	a.FyneApp.Lifecycle().SetOnExitedForeground(a.Player.Stop)
-	a.main = a.FyneApp.NewWindow(TITLE)
+
 	Queue <- eventworker.NewEvent(VIEW, MAIN)
 	a.Main().ShowAndRun()
 }
@@ -93,5 +107,8 @@ func (a *App) ViewListiner(typ string, value string) {
 func (a *App) ThemeListiner(typ string, value string) {
 	if typ == THEME {
 		a.FyneApp.Settings().SetTheme(a.Themes.ThemeByName(value))
+		for _, val := range a.Screen {
+			val.Conteiner.Refresh()
+		}
 	}
 }

@@ -1,15 +1,13 @@
 package animali
 
 import (
-	"fmt"
-
 	fyneappview "github.com/gr4c2-2000/animali/pkg/fyne-app-view"
 
 	"fyne.io/fyne/v2"
 )
 
 type SoundGridView struct {
-	fyneappview.ImageGridView
+	fyneappview.GridView
 	Field []MusicViewItem
 }
 type MusicViewItem struct {
@@ -22,7 +20,6 @@ func buildSoundGridView(Player *Player, mvi []MusicViewItem) *SoundGridView {
 	for _, v := range mvi {
 
 		Player.AddToPlaylist(v.Audio, v.Audio.Name())
-		fmt.Println(v.Audio.Name())
 		item := fyneappview.ImageGridField{Img: v.Button}
 		name := v.Audio.Name()
 		function := func() {
@@ -32,7 +29,8 @@ func buildSoundGridView(Player *Player, mvi []MusicViewItem) *SoundGridView {
 		item.OnTapped = function
 		items = append(items, item)
 	}
-	GridView := fyneappview.NewImageGridView(3, items...)
+	gridItems := fyneappview.ImageGridFields{Fields: items}
+	GridView := fyneappview.NewGridView(3, gridItems)
 	return &SoundGridView{*GridView, mvi}
 }
 

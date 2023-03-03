@@ -30,11 +30,11 @@ func (fft FyneFastTheme) GetColorHover() color.RGBA {
 }
 
 type FyneTheme[T FyneFastThemeInterface] struct {
-	colors T
+	Colors T
 }
 
 func New[T FyneFastThemeInterface](colors T) FyneTheme[T] {
-	new := FyneTheme[T]{colors: colors}
+	new := FyneTheme[T]{Colors: colors}
 	return new
 }
 
@@ -44,11 +44,11 @@ func (m FyneTheme[T]) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant)
 
 	switch name {
 	case theme.ColorNameButton:
-		return m.colors.GetColorButton()
+		return m.Colors.GetColorButton()
 	case theme.ColorNameHover:
-		return m.colors.GetColorHover() //https://icolorpalette.com/color/2a5278
+		return m.Colors.GetColorHover() //https://icolorpalette.com/color/2a5278
 	case theme.ColorNameBackground:
-		return m.colors.GetBackgroundColor() //https://icolorpalette.com/color/flat-blue
+		return m.Colors.GetBackgroundColor() //https://icolorpalette.com/color/flat-blue
 	default:
 		return theme.DefaultTheme().Color(name, variant)
 	}
