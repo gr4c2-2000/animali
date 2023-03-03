@@ -1,4 +1,4 @@
-module Animali
+module github.com/gr4c2-2000/animali
 
 go 1.18
 

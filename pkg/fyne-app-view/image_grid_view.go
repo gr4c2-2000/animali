@@ -28,17 +28,7 @@ func NewImageGridView(size int, slc ...ImageGridField) *ImageGridView {
 	grid.MakeItems().MakeContainer()
 	return &grid
 }
-func NewImageGridViewConteiner(size int, slc ...ImageGridField) *fyne.Container {
-	grid := ImageGridView{GridSize: size}
-	for _, it := range slc {
-		grid.Fields = append(grid.Fields, it)
-	}
-	grid.MakeItems().MakeContainer()
-	return grid.container
-}
-func (igw *ImageGridView) Container() *fyne.Container {
-	return igw.container
-}
+
 func (igw *ImageGridView) MakeContainer() *ImageGridView {
 	igw.container = container.New(layout.NewGridLayout(igw.GridSize), igw.items...)
 	return igw
@@ -54,4 +44,16 @@ func (igw *ImageGridView) MakeItems() *ImageGridView {
 	}
 	igw.items = slc
 	return igw
+}
+
+func NewImageGridViewConteiner(size int, slc ...ImageGridField) *fyne.Container {
+	grid := ImageGridView{GridSize: size}
+	for _, it := range slc {
+		grid.Fields = append(grid.Fields, it)
+	}
+	grid.MakeItems().MakeContainer()
+	return grid.container
+}
+func (igw *ImageGridView) Container() *fyne.Container {
+	return igw.container
 }

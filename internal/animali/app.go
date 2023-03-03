@@ -1,12 +1,15 @@
 package animali
 
 import (
-	eventworker "Animali/pkg/event-worker"
-	fyneappsettings "Animali/pkg/fyne-app-settings"
-	fynelanguage "Animali/pkg/fyne-language"
 	"context"
 	"errors"
 	"time"
+
+	fynelanguage "github.com/gr4c2-2000/animali/pkg/fyne-language"
+
+	fyneappsettings "github.com/gr4c2-2000/animali/pkg/fyne-app-settings"
+
+	eventworker "github.com/gr4c2-2000/animali/pkg/event-worker"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"

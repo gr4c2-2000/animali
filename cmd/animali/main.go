@@ -1,7 +1,7 @@
 package main
 
 import (
-	"Animali/internal/animali"
+	"github.com/gr4c2-2000/animali/internal/animali"
 )
 
 func main() {

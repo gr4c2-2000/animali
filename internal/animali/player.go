@@ -1,9 +1,10 @@
 package animali
 
 import (
-	"Animali/pkg/player"
 	"errors"
 	"fmt"
+
+	"github.com/gr4c2-2000/animali/pkg/player"
 
 	"fyne.io/fyne/v2"
 )

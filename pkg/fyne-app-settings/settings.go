@@ -1,11 +1,12 @@
 package fyneappsettings
 
 import (
-	"Animali/pkg/common"
 	"context"
 	"errors"
 	"reflect"
 	"time"
+
+	"github.com/gr4c2-2000/animali/pkg/common"
 
 	"fyne.io/fyne/v2"
 )
@@ -76,7 +77,7 @@ func (f *Bridge[T]) persistPreference(t string, key string, reflectField reflect
 	case FLOAT:
 		f.FynePreferences.SetFloat(key, reflectField.Float())
 	default:
-		fyne.LogError("Not suported config data type", errors.New("NOT SUPORTED DATA TYPE"))
+		fyne.LogError("Not suported config data type", errors.New("NOT SUPPORTED DATA TYPE"))
 	}
 }
 
@@ -91,7 +92,7 @@ func (f *Bridge[T]) readPreference(t string, key string, reflectField reflect.Va
 	case FLOAT:
 		reflectField.SetFloat(f.FynePreferences.Float(key))
 	default:
-		fyne.LogError("Not suported config data type", errors.New("NOT SUPORTED DATA TYPE"))
+		fyne.LogError("Not suported config data type", errors.New("NOT SUPPORTED DATA TYPE"))
 	}
 }
 

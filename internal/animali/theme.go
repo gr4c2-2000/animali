@@ -1,8 +1,9 @@
 package animali
 
 import (
-	fyneapptheme "Animali/pkg/fyne-app-theme"
 	"image/color"
+
+	fyneapptheme "github.com/gr4c2-2000/animali/pkg/fyne-app-theme"
 )
 
 type FyneSimpleThemes struct {

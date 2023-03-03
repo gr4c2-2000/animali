@@ -1,8 +1,9 @@
 package animali
 
 import (
-	fyneappview "Animali/pkg/fyne-app-view"
 	"fmt"
+
+	fyneappview "github.com/gr4c2-2000/animali/pkg/fyne-app-view"
 
 	"fyne.io/fyne/v2"
 )
@@ -16,7 +17,7 @@ type MusicViewItem struct {
 	Audio  fyne.Resource
 }
 
-func BuildSoundGridView(Player *Player, mvi []MusicViewItem) *SoundGridView {
+func buildSoundGridView(Player *Player, mvi []MusicViewItem) *SoundGridView {
 	items := make([]fyneappview.ImageGridField, 0)
 	for _, v := range mvi {
 
@@ -47,12 +48,12 @@ func BuildMusicView(Player *Player) *SoundGridView {
 	mvi = append(mvi, MusicViewItem{resourceButton7Png, resourceSong7Mp3})
 	mvi = append(mvi, MusicViewItem{resourceButton8Png, resourceSong8Mp3})
 	mvi = append(mvi, MusicViewItem{resourceButton9Png, resourceSong9Mp3})
-	return BuildSoundGridView(Player, mvi)
+	return buildSoundGridView(Player, mvi)
 }
 
 func BuildAnimalView(Player *Player) *SoundGridView {
 	// TODO: add create resources, need to found sounds and images
 	mvi := make([]MusicViewItem, 0)
 
-	return BuildSoundGridView(Player, mvi)
+	return buildSoundGridView(Player, mvi)
 }

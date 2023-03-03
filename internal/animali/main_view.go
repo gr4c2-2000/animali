@@ -1,9 +1,11 @@
 package animali
 
 import (
-	eventworker "Animali/pkg/event-worker"
-	appwiget "Animali/pkg/fyne-app-wiget"
 	"image/color"
+
+	appwiget "github.com/gr4c2-2000/animali/pkg/fyne-app-wiget"
+
+	eventworker "github.com/gr4c2-2000/animali/pkg/event-worker"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
