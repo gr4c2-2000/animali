@@ -13,8 +13,6 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/widget"
 )
 
 var Queue = make(chan eventworker.Event)
@@ -35,6 +33,12 @@ type App struct {
 	Settings             Settings
 	EventWoker           *eventworker.EventWoker
 }
+
+func (a *App) AddScreen(name string, conteiner *fyne.Container) {
+	screen := Screen{title: name, Conteiner: conteiner}
+	a.Screen[name] = screen
+}
+
 type Settings struct {
 	Language  string
 	ThemeName string
@@ -58,34 +62,20 @@ func InitApp() *App {
 	a.Themes = InitFyneTheme()
 	LanguagePack = *fynelanguage.InitLanguagePack()
 	a.FyneApp = app.NewWithID("test.example.com")
-
 	a.Screen = make(map[string]Screen)
+	a.AddScreen(MAIN, MainView())
+	a.AddScreen(MUSIC, SubView(MusicView(a.Player)))
 	fyneappsettings.InitBridge(&a.Settings, a.FyneApp.Preferences()).Watch(context.TODO(), 1*time.Second)
-	Queue <- eventworker.NewEvent(THEME, a.Settings.ThemeName)
-	mav := BuildMainView()
-	muv := BuildMusicView(a.Player)
-	tv := BuildThemeView(a.Themes)
-	MainScr := Screen{title: MAIN, Conteiner: mav.container}
-	function := func() {
-		Queue <- eventworker.NewEvent(VIEW, MAIN)
-	}
-	backbt := widget.NewButton("BACK", function)
-	Music2 := container.NewBorder(backbt, nil, nil, nil, muv.Container())
-	Music := Screen{title: MUSIC, Conteiner: Music2}
-
-	Theme := Screen{title: THEME, Conteiner: container.NewBorder(backbt, nil, nil, nil, tv.Container())}
-	a.Screen[MAIN] = MainScr
-	a.Screen[MUSIC] = Music
-	a.Screen[THEME] = Theme
+	a.AddScreen(THEME, SubView(ThemeView(a.Themes)))
 	a.FyneApp.Lifecycle().SetOnEnteredForeground(a.Player.Stop)
 	a.FyneApp.Lifecycle().SetOnExitedForeground(a.Player.Stop)
 	a.main = a.FyneApp.NewWindow(TITLE)
-
 	return &a
 }
 
 func (a *App) Run() {
 
+	Queue <- eventworker.NewEvent(THEME, a.Settings.ThemeName)
 	Queue <- eventworker.NewEvent(VIEW, MAIN)
 	a.Main().ShowAndRun()
 }
