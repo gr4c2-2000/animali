@@ -18,16 +18,16 @@ type Player struct {
 	Player    *player.Player
 }
 
-func InitPayer() *Player {
+func InitPayer() (error, *Player) {
 	ls := make(map[string]fyne.Resource)
 	stop := make(chan struct{})
 	pla, err := player.InitPayer()
 	if err != nil {
-		panic(err)
+		return err, nil
 	}
 	pl := Player{list: ls, stop: stop, Player: pla}
 	pl.Worker()
-	return &pl
+	return nil, &pl
 }
 
 func (p *Player) AddToPlaylist(fr fyne.Resource, name string) {

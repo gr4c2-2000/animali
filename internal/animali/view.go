@@ -73,8 +73,8 @@ func MainView() *fyne.Container {
 	menu := container.New(layout.NewVBoxLayout(), butMusic, butAnimals, butThemes)
 	empty := canvas.NewText("", color.White)
 	centerGrid := container.New(layout.NewGridLayout(3), empty, menu, empty)
-	Container := container.New(layout.NewGridLayout(1), image, centerGrid, empty)
-	return Container
+	main := container.New(layout.NewGridLayout(1), image, centerGrid, empty)
+	return main
 }
 
 func SubView(me *fyne.Container) *fyne.Container {
@@ -93,7 +93,7 @@ func ThemeView(fst FyneSimpleThemes) *fyne.Container {
 		item.OnTapped = function
 		items = append(items, item)
 	}
-	gridItems := fyneappview.ColorGridFields{Fields: items}
+	gridItems := fyneappview.ColorGridFields{Fields: items, Frame: resourceThemeicoPng}
 	GridView := fyneappview.NewGridView(3, gridItems)
 	return GridView.Container()
 }

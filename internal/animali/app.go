@@ -3,6 +3,7 @@ package animali
 import (
 	"context"
 	"errors"
+	"os"
 	"time"
 
 	fynelanguage "github.com/gr4c2-2000/animali/pkg/fyne-language"
@@ -28,7 +29,7 @@ type App struct {
 	MusicScreenResources []fyne.Resource
 	Themes               FyneSimpleThemes
 	FyneApp              fyne.App
-	Screen               map[string]Screen
+	screenMap            map[string]Screen
 	main                 fyne.Window
 	Settings             Settings
 	EventWoker           *eventworker.EventWoker
@@ -36,7 +37,7 @@ type App struct {
 
 func (a *App) AddScreen(name string, conteiner *fyne.Container) {
 	screen := Screen{title: name, Conteiner: conteiner}
-	a.Screen[name] = screen
+	a.screenMap[name] = screen
 }
 
 type Settings struct {
@@ -51,43 +52,48 @@ type Screen struct {
 
 func InitApp() *App {
 	a := App{}
-	a.Player = InitPayer()
-	a.EventWoker = &eventworker.EventWoker{Queue: Queue}
-	a.EventWoker.AddListiner(a.ThemeListiner, a.ViewListiner)
-	err := a.EventWoker.Worker()
-	if err != nil {
-		fyne.LogError("", err)
-		panic(err)
-	}
-	a.Themes = InitFyneTheme()
-	LanguagePack = *fynelanguage.InitLanguagePack()
-	a.FyneApp = app.NewWithID("test.example.com")
-	a.Screen = make(map[string]Screen)
-	a.AddScreen(MAIN, MainView())
-	a.AddScreen(MUSIC, SubView(MusicView(a.Player)))
-	fyneappsettings.InitBridge(&a.Settings, a.FyneApp.Preferences()).Watch(context.TODO(), 1*time.Second)
-	a.AddScreen(THEME, SubView(ThemeView(a.Themes)))
-	a.FyneApp.Lifecycle().SetOnEnteredForeground(a.Player.Stop)
-	a.FyneApp.Lifecycle().SetOnExitedForeground(a.Player.Stop)
+	ctx, cancel := context.WithCancel(context.Background())
+	a.dependencies(ctx)
+	a.fyneSetup(ctx, cancel)
+	a.screen()
 	a.main = a.FyneApp.NewWindow(TITLE)
 	return &a
 }
-
 func (a *App) Run() {
-
 	Queue <- eventworker.NewEvent(THEME, a.Settings.ThemeName)
 	Queue <- eventworker.NewEvent(VIEW, MAIN)
-	a.Main().ShowAndRun()
+	a.main.ShowAndRun()
 }
 
-func (a *App) Main() fyne.Window {
-	return a.main
+func (a *App) fyneSetup(ctx context.Context, cancel context.CancelFunc) {
+	a.FyneApp = app.NewWithID("github.com/gr4c2-2000/animali")
+	a.FyneApp.Lifecycle().SetOnEnteredForeground(a.Player.Stop)
+	a.FyneApp.Lifecycle().SetOnExitedForeground(a.Player.Stop)
+	a.FyneApp.Lifecycle().SetOnStopped(cancel)
+	fyneappsettings.InitBridge(&a.Settings, a.FyneApp.Preferences()).Watch(context.TODO(), 1*time.Second)
+}
+func (a *App) dependencies(ctx context.Context) {
+	err, Player := InitPayer()
+	handleInitError(err)
+	a.EventWoker = eventworker.New(ctx, Queue, a.ThemeListiner, a.ViewListiner)
+	err = a.EventWoker.Worker()
+	handleInitError(err)
+	a.Player = Player
+	a.Themes = InitFyneTheme()
+	LanguagePack = *fynelanguage.InitLanguagePack()
+}
+func (a *App) screen() {
+	a.screenMap = make(map[string]Screen)
+	a.AddScreen(MAIN, MainView())
+	a.AddScreen(MUSIC, SubView(MusicView(a.Player)))
+	a.AddScreen(THEME, SubView(ThemeView(a.Themes)))
 }
 
 func (a *App) ViewListiner(typ string, value string) {
 	if typ == VIEW {
-		if screen, ok := a.Screen[value]; ok {
+		if screen, ok := a.screenMap[value]; ok {
 			a.main.SetContent(screen.Conteiner)
+			a.Player.Stop()
 		} else {
 			fyne.LogError("", errors.New("incorect ScreenName"))
 		}
@@ -97,8 +103,16 @@ func (a *App) ViewListiner(typ string, value string) {
 func (a *App) ThemeListiner(typ string, value string) {
 	if typ == THEME {
 		a.FyneApp.Settings().SetTheme(a.Themes.ThemeByName(value))
-		for _, val := range a.Screen {
+		a.Settings.ThemeName = value
+		for _, val := range a.screenMap {
 			val.Conteiner.Refresh()
 		}
+	}
+}
+
+func handleInitError(err error) {
+	if err != nil {
+		fyne.LogError("", err)
+		os.Exit(0)
 	}
 }
